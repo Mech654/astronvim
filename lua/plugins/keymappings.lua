@@ -151,6 +151,54 @@ return {
         ["<C-q>"] = { ":wq<CR>", desc = "Save current buffer and close window" },
         ["<C-S-q>"] = { ":wqa<CR>", desc = "Save all buffers and quit all" },
         
+        -- Pet commands (fun!)
+        ["<leader>pn"] = { 
+          function()
+            local pets = {"dog", "cat", "slime", "clippy", "cockatiel", "crab", "mod", "rocky", "rubber duck", "snake", "zappy"}
+            local styles = {
+              dog = {"brown", "black", "gray", "beige"},
+              cat = {"brown", "black", "gray"},
+              slime = {"green", "pink", "orange", "blue"},
+              clippy = {"black", "brown", "green", "yellow"},
+              cockatiel = {"gray"},
+              crab = {"red"},
+              mod = {"purple"},
+              rocky = {"gray"},
+              ["rubber duck"] = {"yellow"},
+              snake = {"green"},
+              zappy = {"yellow"}
+            }
+            
+            -- Pick random pet and style
+            local pet = pets[math.random(#pets)]
+            local pet_styles = styles[pet]
+            local style = pet_styles[math.random(#pet_styles)]
+            
+            -- Generate unique name with timestamp
+            local name = pet .. "_" .. os.time()
+            
+            vim.cmd("PetsNewCustom " .. pet .. " " .. style .. " " .. name)
+          end, 
+          desc = "Spawn a random pet" 
+        },
+        ["<leader>pk"] = { ":PetsKillAll<CR>", desc = "Kill all pets" },
+        ["<leader>pl"] = { ":PetsList<CR>", desc = "List all pets" },
+        
+        -- UI Enhancement commands
+        ["<leader>tw"] = { "<cmd>Twilight<cr>", desc = "Toggle Twilight focus mode" },
+        ["<leader>nd"] = { function() require("notify").dismiss({ silent = true, pending = true }) end, desc = "Dismiss notifications" },
+        ["<leader>nh"] = { 
+          function()
+            local ok, telescope = pcall(require, "telescope")
+            if ok then
+              vim.cmd("Telescope notify")
+            else
+              vim.notify("Telescope not available", vim.log.levels.WARN)
+            end
+          end, 
+          desc = "Show notification history" 
+        },
+        
         -- Window splits and navigation
         ["<M-h>"] = { "<C-w>h", desc = "Move to left window" },
         ["<M-j>"] = { "<C-w>j", desc = "Move to window below" },
