@@ -116,38 +116,41 @@ return {
   -- Trouble plugin for diagnostics panel
   {
     "folke/trouble.nvim",
-    opts = {}, -- for default options, refer to the configuration section for custom setup.
+    opts = {},
     cmd = "Trouble",
     keys = {
       {
+        "<leader>x",
+        function()
+          -- Create a simple menu for Trouble options
+          local options = {
+            { key = "x", desc = "Toggle Diagnostics", cmd = "Trouble diagnostics toggle" },
+            { key = "X", desc = "Buffer Diagnostics", cmd = "Trouble diagnostics toggle filter.buf=0" },
+            { key = "s", desc = "Symbols", cmd = "Trouble symbols toggle focus=false" },
+            { key = "l", desc = "LSP References", cmd = "Trouble lsp toggle focus=false win.position=right" },
+            { key = "L", desc = "Location List", cmd = "Trouble loclist toggle" },
+            { key = "q", desc = "Quickfix List", cmd = "Trouble qflist toggle" },
+          }
+          
+          -- Display menu
+          vim.ui.select(options, {
+            prompt = "Trouble Options:",
+            format_item = function(item)
+              return item.key .. ": " .. item.desc
+            end,
+          }, function(choice)
+            if choice then
+              vim.cmd(choice.cmd)
+            end
+          end)
+        end,
+        desc = "Trouble Menu",
+      },
+      -- Quick access to most common one
+      {
         "<leader>xx",
         "<cmd>Trouble diagnostics toggle<cr>",
-        desc = "Diagnostics (Trouble)",
-      },
-      {
-        "<leader>xX",
-        "<cmd>Trouble diagnostics toggle filter.buf=0<cr>",
-        desc = "Buffer Diagnostics (Trouble)",
-      },
-      {
-        "<leader>cs",
-        "<cmd>Trouble symbols toggle focus=false<cr>",
-        desc = "Symbols (Trouble)",
-      },
-      {
-        "<leader>cl",
-        "<cmd>Trouble lsp toggle focus=false win.position=right<cr>",
-        desc = "LSP Definitions / references / ... (Trouble)",
-      },
-      {
-        "<leader>xL",
-        "<cmd>Trouble loclist toggle<cr>",
-        desc = "Location List (Trouble)",
-      },
-      {
-        "<leader>xQ",
-        "<cmd>Trouble qflist toggle<cr>",
-        desc = "Quickfix List (Trouble)",
+        desc = "Toggle Diagnostics",
       },
     },
   },
@@ -162,6 +165,77 @@ return {
     event = "VeryLazy",
     config = function(_, opts)
       require("project_nvim").setup(opts)
+    end,
+  },
+
+  -- Dashboard with project option
+  {
+    "AstroNvim/astrocore",
+    ---@type AstroCoreOpts
+    opts = {
+      options = {
+        opt = {
+          cmdheight = 0,
+        },
+      },
+    },
+  },
+
+  -- Override AstroNvim dashboard
+  {
+    "goolord/alpha-nvim",
+    dependencies = { "ahmedkhalf/project.nvim" },
+    config = function()
+      local alpha = require("alpha")
+      local dashboard = require("alpha.themes.dashboard")
+
+      -- Set header
+      dashboard.section.header.val = {
+        "    ███╗   ██╗ ███████╗ ██████╗  ██╗   ██╗ ██╗ ███╗   ███╗",
+        "    ████╗  ██║ ██╔════╝██╔═══██╗ ██║   ██║ ██║ ████╗ ████║",
+        "    ██╔██╗ ██║ █████╗  ██║   ██║ ██║   ██║ ██║ ██╔████╔██║",
+        "    ██║╚██╗██║ ██╔══╝  ██║   ██║ ╚██╗ ██╔╝ ██║ ██║╚██╔╝██║",
+        "    ██║ ╚████║ ███████╗╚██████╔╝  ╚████╔╝  ██║ ██║ ╚═╝ ██║",
+        "    ╚═╝  ╚═══╝ ╚══════╝ ╚═════╝    ╚═══╝   ╚═╝ ╚═╝     ╚═╝",
+      }
+
+      -- Set menu
+      dashboard.section.buttons.val = {
+        dashboard.button("f", "  Find File", function() 
+          local ok, snacks = pcall(require, "snacks")
+          if ok and snacks and snacks.picker then
+            snacks.picker.files()
+          end
+        end),
+        dashboard.button("n", "  New File", ":ene <BAR> startinsert <CR>"),
+        dashboard.button("p", "  Projects", function()
+          local ok, snacks = pcall(require, "snacks")
+          if ok and snacks and snacks.picker and snacks.picker.projects then
+            snacks.picker.projects()
+          else
+            vim.notify("Projects picker not available", vim.log.levels.WARN)
+          end
+        end),
+        dashboard.button("r", "  Recent Files", function()
+          local ok, snacks = pcall(require, "snacks")
+          if ok and snacks and snacks.picker then
+            snacks.picker.recent()
+          end
+        end),
+        dashboard.button("t", "  Find Text", function()
+          local ok, snacks = pcall(require, "snacks")
+          if ok and snacks and snacks.picker then
+            snacks.picker.grep()
+          end
+        end),
+        dashboard.button("c", "  Config", ":edit ~/.config/nvim/init.lua<CR>"),
+        dashboard.button("q", "  Quit", ":qa<CR>"),
+      }
+
+      -- Set footer
+      dashboard.section.footer.val = { "Happy coding!" }
+
+      alpha.setup(dashboard.opts)
     end,
   },
 }

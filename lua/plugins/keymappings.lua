@@ -11,43 +11,155 @@ return {
         ["<C-3>"] = { "3gt", desc = "Go to tab 3" },
         ["<C-4>"] = { "4gt", desc = "Go to tab 4" },
         
-        -- Project navigation
-        ["<leader>fp"] = { "<cmd>Telescope projects<cr>", desc = "Find projects" },
+        -- Buffer navigation with Alt + numbers
+        ["<M-1>"] = { 
+          function()
+            local buffers = vim.tbl_filter(function(buf)
+              return vim.api.nvim_buf_is_loaded(buf) and vim.api.nvim_buf_get_option(buf, 'buflisted')
+            end, vim.api.nvim_list_bufs())
+            if buffers[1] then vim.api.nvim_set_current_buf(buffers[1]) end
+          end, 
+          desc = "Go to buffer 1" 
+        },
+        ["<M-2>"] = { 
+          function()
+            local buffers = vim.tbl_filter(function(buf)
+              return vim.api.nvim_buf_is_loaded(buf) and vim.api.nvim_buf_get_option(buf, 'buflisted')
+            end, vim.api.nvim_list_bufs())
+            if buffers[2] then vim.api.nvim_set_current_buf(buffers[2]) end
+          end, 
+          desc = "Go to buffer 2" 
+        },
+        ["<M-3>"] = { 
+          function()
+            local buffers = vim.tbl_filter(function(buf)
+              return vim.api.nvim_buf_is_loaded(buf) and vim.api.nvim_buf_get_option(buf, 'buflisted')
+            end, vim.api.nvim_list_bufs())
+            if buffers[3] then vim.api.nvim_set_current_buf(buffers[3]) end
+          end, 
+          desc = "Go to buffer 3" 
+        },
+        ["<M-4>"] = { 
+          function()
+            local buffers = vim.tbl_filter(function(buf)
+              return vim.api.nvim_buf_is_loaded(buf) and vim.api.nvim_buf_get_option(buf, 'buflisted')
+            end, vim.api.nvim_list_bufs())
+            if buffers[4] then vim.api.nvim_set_current_buf(buffers[4]) end
+          end, 
+          desc = "Go to buffer 4" 
+        },
+        ["<M-5>"] = { 
+          function()
+            local buffers = vim.tbl_filter(function(buf)
+              return vim.api.nvim_buf_is_loaded(buf) and vim.api.nvim_buf_get_option(buf, 'buflisted')
+            end, vim.api.nvim_list_bufs())
+            if buffers[5] then vim.api.nvim_set_current_buf(buffers[5]) end
+          end, 
+          desc = "Go to buffer 5" 
+        },
+        ["<M-6>"] = { 
+          function()
+            local buffers = vim.tbl_filter(function(buf)
+              return vim.api.nvim_buf_is_loaded(buf) and vim.api.nvim_buf_get_option(buf, 'buflisted')
+            end, vim.api.nvim_list_bufs())
+            if buffers[6] then vim.api.nvim_set_current_buf(buffers[6]) end
+          end, 
+          desc = "Go to buffer 6" 
+        },
+        ["<M-7>"] = { 
+          function()
+            local buffers = vim.tbl_filter(function(buf)
+              return vim.api.nvim_buf_is_loaded(buf) and vim.api.nvim_buf_get_option(buf, 'buflisted')
+            end, vim.api.nvim_list_bufs())
+            if buffers[7] then vim.api.nvim_set_current_buf(buffers[7]) end
+          end, 
+          desc = "Go to buffer 7" 
+        },
+        ["<M-8>"] = { 
+          function()
+            local buffers = vim.tbl_filter(function(buf)
+              return vim.api.nvim_buf_is_loaded(buf) and vim.api.nvim_buf_get_option(buf, 'buflisted')
+            end, vim.api.nvim_list_bufs())
+            if buffers[8] then vim.api.nvim_set_current_buf(buffers[8]) end
+          end, 
+          desc = "Go to buffer 8" 
+        },
+        ["<M-9>"] = { 
+          function()
+            local buffers = vim.tbl_filter(function(buf)
+              return vim.api.nvim_buf_is_loaded(buf) and vim.api.nvim_buf_get_option(buf, 'buflisted')
+            end, vim.api.nvim_list_bufs())
+            if buffers[9] then vim.api.nvim_set_current_buf(buffers[9]) end
+          end, 
+          desc = "Go to buffer 9" 
+        },
+        
+        -- Project navigation - leader + p
+        ["<leader>p"] = { 
+          function()
+            local ok, snacks = pcall(require, "snacks")
+            if ok and snacks and snacks.picker and snacks.picker.projects then
+              snacks.picker.projects()
+            else
+              -- Fallback to find files in current directory
+              vim.notify("Projects picker not available", vim.log.levels.WARN)
+            end
+          end,
+          desc = "Find projects" 
+        },
         
         -- Window management
         ["<leader>c"] = { "<C-w>c", desc = "Close current window" },
         ["<leader>o"] = { "<C-w>o", desc = "Close all other windows" },
         
-        -- Splits with AltGr (Meta)
-        ["<M-h>"] = { "<cmd>split<cr>", desc = "Horizontal Split" },
-        ["<M-j>"] = { "<cmd>vsplit<cr>", desc = "Vertical Split" },
-        
-        -- Splits but open Snacks picker
-        ["<M-k>"] = {
+        -- Buffer navigation helpers
+        ["<M-0>"] = { 
           function()
-            vim.cmd.split()
             local ok, snacks = pcall(require, "snacks")
-            if not ok or not snacks or not snacks.picker or not snacks.picker.files then
-              vim.notify("Snacks picker not available", vim.log.levels.WARN)
-              return
+            if ok and snacks and snacks.picker and snacks.picker.buffers then
+              snacks.picker.buffers()
+            else
+              -- Fallback to builtin buffer list
+              vim.cmd("buffers")
             end
-            snacks.picker.files({ layout = { preset = "default" } })
-          end,
-          desc = "Horizontal Split + Snacks Picker"
+          end, 
+          desc = "List all buffers" 
         },
         
-        ["<M-l>"] = {
+        -- File picker
+        ["<M-f>"] = { 
           function()
-            vim.cmd.vsplit()
             local ok, snacks = pcall(require, "snacks")
-            if not ok or not snacks or not snacks.picker or not snacks.picker.files then
-              vim.notify("Snacks picker not available", vim.log.levels.WARN)
-              return
+            if ok and snacks and snacks.picker and snacks.picker.files then
+              snacks.picker.files()
+            else
+              -- Fallback to find files
+              vim.cmd("find .")
             end
-            snacks.picker.files({ layout = { preset = "vertical" } })
-          end,
-          desc = "Vertical Split + Snacks Picker"
+          end, 
+          desc = "Find files" 
         },
+        
+        -- Previous/Next buffer navigation  
+        ["<M-,>"] = { ":bprevious<CR>", desc = "Previous buffer" },
+        ["<M-.>"] = { ":bnext<CR>", desc = "Next buffer" },
+        ["<M-x>"] = { ":bdelete<CR>", desc = "Close current buffer" },
+        
+        -- Save and quit commands
+        ["<C-s>"] = { ":w<CR>", desc = "Save current buffer" },
+        ["<C-S-s>"] = { ":wa<CR>", desc = "Save all buffers" },
+        ["<C-q>"] = { ":wq<CR>", desc = "Save current buffer and close window" },
+        ["<C-S-q>"] = { ":wqa<CR>", desc = "Save all buffers and quit all" },
+        
+        -- Window splits and navigation
+        ["<M-h>"] = { "<C-w>h", desc = "Move to left window" },
+        ["<M-j>"] = { "<C-w>j", desc = "Move to window below" },
+        ["<M-k>"] = { "<C-w>k", desc = "Move to window above" },
+        ["<M-l>"] = { "<C-w>l", desc = "Move to right window" },
+        
+        -- Window splits
+        ["<M-s>"] = { "<cmd>split<cr>", desc = "Horizontal Split" },
+        ["<M-v>"] = { "<cmd>vsplit<cr>", desc = "Vertical Split" },
         
         -- Copy whole buffer to clipboard
         ["<CR><CR>"] = { "ggVG\"+y", desc = "Copy whole buffer" },

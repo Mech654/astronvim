@@ -1,30 +1,5 @@
 local map = vim.keymap.set
 
--- Splits with AltGr (Meta)
-map("n", "<M-h>", "<cmd>split<cr>", { desc = "Horizontal Split" })
-map("n", "<M-j>", "<cmd>vsplit<cr>", { desc = "Vertical Split" })
-
--- Splits but open Snacks picker (safe if snacks isn't available)
-map("n", "<M-k>", function()
-vim.cmd.split()
-local ok, snacks = pcall(require, "snacks")
-if not ok or not snacks or not snacks.picker or not snacks.picker.files then
-    vim.notify("Snacks picker not available", vim.log.levels.WARN)
-    return
-    end
-    snacks.picker.files({ layout = { preset = "default" } })
-    end, { desc = "Horizontal Split + Snacks Picker" })
-
-map("n", "<M-l>", function()
-vim.cmd.vsplit()
-local ok, snacks = pcall(require, "snacks")
-if not ok or not snacks or not snacks.picker or not snacks.picker.files then
-    vim.notify("Snacks picker not available", vim.log.levels.WARN)
-    return
-    end
-    snacks.picker.files({ layout = { preset = "vertical" } })
-    end, { desc = "Vertical Split + Snacks Picker" })
-
 -- Copy whole buffer to clipboard
 map("n", "<CR><CR>", "ggVG\"+y", { desc = "Copy whole buffer", noremap = true, silent = true })
 
