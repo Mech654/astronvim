@@ -39,5 +39,5 @@ if str == nil or str == "" then
             vim.api.nvim_command('%delete _')
             end, { desc = "Delete whole buffer content without yanking", noremap = true, silent = true })
 
-            -- Exit insert mode with 'q' (quick and destructive — you can't type 'q' normally)
-            map("i", "q", "<Esc>", { desc = "Exit insert mode with q", noremap = true, silent = true })
+-- Exit insert mode with 'jk' (quick escape sequence)
+map("i", "jk", "<Esc>", { desc = "Exit insert mode with jk", noremap = true, silent = true })

@@ -198,6 +198,47 @@ return {
           end, 
           desc = "Show notification history" 
         },
+
+        -- HTML in strings helpers
+        ["<leader>h"] = { name = "HTML tools" },
+        ["<leader>he"] = { "<C-y>,", desc = "Emmet expand (Ctrl+y,)" },
+        ["<leader>hu"] = { "<C-y>u", desc = "Update surrounding tag" },
+        ["<leader>hd"] = { "<C-y>d", desc = "Balance tag inward" },
+        ["<leader>hD"] = { "<C-y>D", desc = "Balance tag outward" },
+        ["<leader>ht"] = { function()
+          -- Toggle between HTML and text in current string
+          local line = vim.api.nvim_get_current_line()
+          local cursor = vim.api.nvim_win_get_cursor(0)
+          print("Toggle HTML mode at position: " .. cursor[2])
+        end, desc = "Toggle HTML mode in string" },
+        
+        -- Noice commands
+        ["<leader>nl"] = { "<cmd>Noice last<cr>", desc = "Show last message" },
+        ["<leader>nh"] = { "<cmd>Noice history<cr>", desc = "Show message history" },
+        ["<leader>na"] = { "<cmd>Noice all<cr>", desc = "Show all messages" },
+        ["<leader>nd"] = { "<cmd>Noice dismiss<cr>", desc = "Dismiss all messages" },
+        
+        -- Copilot commands
+        ["<leader>cp"] = { "<cmd>Copilot panel<cr>", desc = "Open Copilot panel" },
+        ["<leader>cs"] = { "<cmd>Copilot status<cr>", desc = "Check Copilot status" },
+        ["<leader>ce"] = { "<cmd>Copilot enable<cr>", desc = "Enable Copilot" },
+        ["<leader>cd"] = { "<cmd>Copilot disable<cr>", desc = "Disable Copilot" },
+        
+        -- Force LSP/Workspace refresh (nuclear options)
+        ["<leader>rf"] = { 
+          function()
+            vim.cmd("edit!")
+            vim.notify("File force reloaded", vim.log.levels.WARN)
+          end, 
+          desc = "Force reload current file" 
+        },
+        ["<leader>ra"] = {
+          function()
+            vim.cmd("bufdo edit!")
+            vim.notify("All buffers force reloaded", vim.log.levels.WARN)
+          end,
+          desc = "Force reload all buffers"
+        },
         
         -- Window splits and navigation
         ["<M-h>"] = { "<C-w>h", desc = "Move to left window" },
@@ -250,8 +291,8 @@ return {
         },
       },
       i = {
-        -- Exit insert mode with 'q'
-        ["q"] = { "<Esc>", desc = "Exit insert mode with q" },
+        -- Fast escape with jk
+        ["jk"] = { "<Esc>", desc = "Exit insert mode with jk" },
       },
     },
   },

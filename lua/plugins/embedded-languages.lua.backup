@@ -1,0 +1,307 @@
+-- Enhanced support for HTML in strings within JS/CSS files
+return {
+  -- nvim-treesitter-textobjects for better text object handling
+  {
+    "nvim-treesitter/nvim-treesitter-textobjects",
+    dependencies = { "nvim-treesitter/nvim-treesitter" },
+    config = function()
+      require("nvim-treesitter.configs").setup({
+        textobjects = {
+          select = {
+            enable = true,
+            lookahead = true,
+            keymaps = {
+              -- HTML in strings
+              ["ah"] = "@tag.outer",
+              ["ih"] = "@tag.inner",
+              ["at"] = "@attribute.outer",
+              ["it"] = "@attribute.inner",
+            },
+          },
+          move = {
+            enable = true,
+            set_jumps = true,
+            goto_next_start = {
+              ["]t"] = "@tag.outer",
+              ["]a"] = "@attribute.outer",
+            },
+            goto_next_end = {
+              ["]T"] = "@tag.outer",
+              ["]A"] = "@attribute.outer", 
+            },
+            goto_previous_start = {
+              ["[t"] = "@tag.outer",
+              ["[a"] = "@attribute.outer",
+            },
+            goto_previous_end = {
+              ["[T"] = "@tag.outer",
+              ["[A"] = "@attribute.outer",
+            },
+          },
+        },
+      })
+    end,
+  },
+
+  -- Enhanced HTML/CSS/JS integration
+  {
+    "windwp/nvim-ts-autotag",
+    dependencies = { "nvim-treesitter/nvim-treesitter" },
+    ft = {
+      "html",
+      "javascript",
+      "javascriptreact", 
+      "typescript",
+      "typescriptreact",
+      "vue",
+      "xml",
+      "php",
+      "markdown",
+    },
+    config = function()
+      require("nvim-ts-autotag").setup({
+        opts = {
+          -- Defaults
+          enable_close = true, -- Auto close tags
+          enable_rename = true, -- Auto rename pairs of tags
+          enable_close_on_slash = false -- Auto close on trailing </
+        },
+        -- Also override individual filetype configs, these take priority.
+        -- Empty by default, useful if one of the "opts" global settings doesn't work well in a specific filetype
+        per_filetype = {
+          ["html"] = {
+            enable_close = false
+          },
+          ["javascript"] = {
+            enable_close = true,
+            enable_rename = true,
+          },
+          ["javascriptreact"] = {
+            enable_close = true,
+            enable_rename = true,
+          },
+          ["typescript"] = {
+            enable_close = true,
+            enable_rename = true,
+          },
+          ["typescriptreact"] = {
+            enable_close = true,
+            enable_rename = true,
+          }
+        }
+      })
+    end,
+  },
+
+  -- Emmet support for HTML in strings
+  {
+    "mattn/emmet-vim",
+    ft = {
+      "html",
+      "css",
+      "javascript",
+      "javascriptreact",
+      "typescript", 
+      "typescriptreact",
+      "vue",
+      "xml",
+      "php",
+    },
+    config = function()
+      vim.g.user_emmet_settings = {
+        javascript = {
+          extends = 'jsx',
+          quote_char = "'",
+        },
+        typescript = {
+          extends = 'jsx',
+          quote_char = "'",
+        },
+        javascriptreact = {
+          extends = 'jsx', 
+        },
+        typescriptreact = {
+          extends = 'jsx',
+        },
+      }
+      
+      -- Enable Emmet in JS/TS strings
+      vim.g.user_emmet_install_global = 0
+      vim.g.user_emmet_mode = 'inv' -- insert, normal, visual modes
+      
+      -- Set up keybindings
+      vim.keymap.set({'i', 'n'}, '<C-y>,', '<plug>(emmet-expand-abbr)', { desc = "Emmet expand" })
+      vim.keymap.set({'i', 'n'}, '<C-y>;', '<plug>(emmet-expand-word)', { desc = "Emmet expand word" })
+      vim.keymap.set('n', '<C-y>u', '<plug>(emmet-update-tag)', { desc = "Emmet update tag" })
+      vim.keymap.set('n', '<C-y>d', '<plug>(emmet-balance-tag-inward)', { desc = "Emmet balance inward" })
+      vim.keymap.set('n', '<C-y>D', '<plug>(emmet-balance-tag-outward)', { desc = "Emmet balance outward" })
+    end,
+    cmd = "EmmetInstall",
+    init = function()
+      -- Auto-enable Emmet for specific file types
+      vim.api.nvim_create_autocmd("FileType", {
+        pattern = { "html", "css", "javascript", "javascriptreact", "typescript", "typescriptreact", "vue" },
+        callback = function()
+          vim.cmd("EmmetInstall")
+        end,
+      })
+    end,
+  },
+
+  -- Better syntax highlighting for template strings
+  {
+    "styled-components/vim-styled-components",
+    ft = { "javascript", "javascriptreact", "typescript", "typescriptreact" },
+  },
+
+  -- Enhanced JavaScript/TypeScript support with better HTML string handling
+  {
+    "yioneko/nvim-vtsls", 
+    ft = { "javascript", "javascriptreact", "typescript", "typescriptreact" },
+    config = function()
+      require("vtsls").config({
+        settings = {
+          typescript = {
+            preferences = {
+              quoteStyle = "single",
+              includeCompletionsForModuleExports = true,
+              includeCompletionsForImportStatements = true,
+            },
+            suggest = {
+              completeFunctionCalls = true,
+            },
+            inlayHints = {
+              parameterNames = { enabled = "literals" },
+              parameterTypes = { enabled = true },
+              variableTypes = { enabled = true },
+              propertyDeclarationTypes = { enabled = true },
+              functionLikeReturnTypes = { enabled = true },
+            },
+          },
+          javascript = {
+            preferences = {
+              quoteStyle = "single",
+              includeCompletionsForModuleExports = true,
+              includeCompletionsForImportStatements = true,
+            },
+            suggest = {
+              completeFunctionCalls = true,
+            },
+            inlayHints = {
+              parameterNames = { enabled = "literals" },
+              parameterTypes = { enabled = true },
+              variableTypes = { enabled = true }, 
+              propertyDeclarationTypes = { enabled = true },
+              functionLikeReturnTypes = { enabled = true },
+            },
+          },
+        },
+      })
+    end,
+  },
+
+  -- Template string highlighting and editing
+  {
+    "Quramy/vim-js-pretty-template",
+    ft = { "javascript", "javascriptreact", "typescript", "typescriptreact" },
+    config = function()
+      -- Enable template string highlighting for common template functions
+      vim.g.js_pretty_template_tags = {
+        "html", "htm", "template", "styled", "gql", "graphql", "sql", "query", "css"
+      }
+      
+      -- Auto-detect template strings
+      vim.api.nvim_create_autocmd("FileType", {
+        pattern = { "javascript", "javascriptreact", "typescript", "typescriptreact" },
+        callback = function()
+          vim.cmd("JsPrettyTemplate")
+        end,
+      })
+    end,
+  },
+
+  -- Better CSS-in-JS support
+  {
+    "styled-components/vim-styled-components", 
+    branch = "main",
+    ft = { "javascript", "javascriptreact", "typescript", "typescriptreact" },
+  },
+
+  -- SQL syntax highlighting in template literals
+  {
+    "tpope/vim-dadbod",
+    ft = { "sql", "javascript", "javascriptreact", "typescript", "typescriptreact" },
+    config = function()
+      -- Simple SQL highlighting for template strings
+      vim.api.nvim_create_autocmd("FileType", {
+        pattern = { "javascript", "javascriptreact", "typescript", "typescriptreact" },
+        callback = function()
+          -- Enable SQL syntax in template literals tagged with sql/query
+          vim.cmd([[
+            syntax region sqlTemplateString start=+\v(sql|query|SQL|QUERY)`+ end=+`+ contains=@SQL
+            hi def link sqlTemplateString String
+          ]])
+        end,
+      })
+
+      -- Set custom colors for SQL in template literals
+      vim.api.nvim_create_autocmd("ColorScheme", {
+        callback = function()
+          -- SQL template literal background and keywords
+          vim.api.nvim_set_hl(0, "sqlTemplateString", { 
+            fg = "#FFB86C", -- Orange/yellow color
+            bg = "NONE",
+            italic = true
+          })
+          
+          -- SQL keywords in template literals
+          vim.api.nvim_set_hl(0, "sqlKeyword", {
+            fg = "#F1FA8C", -- Bright yellow
+            bold = true
+          })
+          
+          -- SQL strings in template literals  
+          vim.api.nvim_set_hl(0, "sqlString", {
+            fg = "#50FA7B", -- Green for strings
+          })
+          
+          -- SQL numbers in template literals
+          vim.api.nvim_set_hl(0, "sqlNumber", {
+            fg = "#BD93F9", -- Purple for numbers
+          })
+          
+          -- SQL operators
+          vim.api.nvim_set_hl(0, "sqlOperator", {
+            fg = "#FF79C6", -- Pink for operators
+          })
+        end,
+      })
+
+      -- Apply colors immediately if colorscheme is already loaded
+      vim.defer_fn(function()
+        vim.api.nvim_set_hl(0, "sqlTemplateString", { 
+          fg = "#FFB86C", -- Orange/yellow color
+          bg = "NONE",
+          italic = true
+        })
+        
+        vim.api.nvim_set_hl(0, "sqlKeyword", {
+          fg = "#F1FA8C", -- Bright yellow
+          bold = true
+        })
+        
+        vim.api.nvim_set_hl(0, "sqlString", {
+          fg = "#50FA7B", -- Green for strings
+        })
+        
+        vim.api.nvim_set_hl(0, "sqlNumber", {
+          fg = "#BD93F9", -- Purple for numbers
+        })
+        
+        vim.api.nvim_set_hl(0, "sqlOperator", {
+          fg = "#FF79C6", -- Pink for operators
+        })
+      end, 100)
+    end,
+  },
+}
